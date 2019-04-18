@@ -23,6 +23,7 @@ module Vagrancy
     def to_json
       { 
         :name => "#{@group}/#{@name}",
+        :tag => "#{@group}/#{@name}",
         :versions => BoxVersions.new(self, @filestore, @request).to_a
       }.to_json
     end
