@@ -29,9 +29,9 @@ module Vagrancy
     get '/box/:username/:name' do
       box = Vagrancy::Box.new(params[:name], params[:username], filestore, request)
 
-      status box.exists? ? 200 : 404
+      status 200
       content_type 'application/json'
-      box.to_json if box.exists?
+      box.to_json
     end
 
     # Vagrant Cloud emulation, stepCreateVersion
