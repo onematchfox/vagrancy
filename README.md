@@ -1,4 +1,4 @@
-[![Build Status](https://img.shields.io/travis/ryandoyle/vagrancy.svg)](https://travis-ci.org/ryandoyle/vagrancy)
+<!-- [![Build Status](https://img.shields.io/travis/onematchfox/vagrancy.svg)](https://travis-ci.org/onematchfox/vagrancy) -->
 
 > Private Vagrant box hosting
 
@@ -7,19 +7,19 @@ Vagrancy implments a self-hosted subset of [Atlas](https://atlas.hashicorp.com/)
 ### Install
 Vagrancy has all its dependencies packaged with it. It requires no runtime at all.
 ```shell
-wget https://github.com/ryandoyle/vagrancy/releases/download/0.0.4/vagrancy-0.0.4-linux-x86_64.tar.gz
-tar xvf vagrancy-0.0.4-linux-x86_64.tar.gz
-cd vagrancy-0.0.4-linux-x86_64
+wget https://github.com/onematchfox/vagrancy/releases/download/0.0.6/vagrancy-0.0.6-linux-x86_64.tar.gz
+tar xvf vagrancy-0.0.6-linux-x86_64.tar.gz
+cd vagrancy-0.0.6-linux-x86_64
 ./vagrancy
 ```
 
 ### Upgrade
 If you configured `filestore_path` in `config.yml` to a directory outside of the Vagrancy install, there's not much to do. Copy this file over from the old install and you're good to go:
 ```shell
-wget https://github.com/ryandoyle/vagrancy/releases/download/0.0.4/vagrancy-0.0.4-linux-x86_64.tar.gz
-tar xvf vagrancy-0.0.4-linux-x86_64.tar.gz
-cp vagrancy-3-linux-x86_64/config.yml vagrancy-0.0.4-linux-x86_64/
-cd vagrancy-0.0.4-linux-x86_64/
+wget https://github.com/onematchfox/vagrancy/releases/download/0.0.6/vagrancy-0.0.6-linux-x86_64.tar.gz
+tar xvf vagrancy-0.0.6-linux-x86_64.tar.gz
+cp vagrancy-3-linux-x86_64/config.yml vagrancy-0.0.6-linux-x86_64/
+cd vagrancy-0.0.6-linux-x86_64/
 # Stop old instance of Vagrancy running before running the new one below
 ./vagrancy
 ```
@@ -46,7 +46,7 @@ Add something like the following to your `.json` Packer file. For Packer version
         "version": "1.0.0"
       }   
     }   
-  ], 
+  ],
   ...
 ```
 ##### Manually uploading
@@ -64,7 +64,7 @@ Vagrant.configure(2) do |config|
 end
 ```
 ### API
-Operation| Command 
+Operation| Command
 ---------|----------
 **Deleting a box** | `curl -XDELETE http://localhost:8099/myusername/ubuntu/1.0.0/virtualbox`
 **Manually uploading a box** | `curl http://localhost:8099/myusername/ubuntu/1.0.0/virtualbox --upload-file ubuntu-precise.box`
