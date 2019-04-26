@@ -8,6 +8,10 @@ module Vagrancy
       path_maybe_no_traling_slash + (path_maybe_no_traling_slash[-1] == '/' ? '' : '/')
     end
 
+    def tmp
+      application_root + '/tmp/'
+    end
+
     private
 
     def path_maybe_no_traling_slash
@@ -46,5 +50,6 @@ module Vagrancy
     def default
       application_root + '/data'
     end
+
   end
 end

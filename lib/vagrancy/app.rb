@@ -117,9 +117,9 @@ module Vagrancy
       DummyArtifact.new(params).to_json
     end
 
-    def filestore 
-      path = FilestoreConfiguration.new.path
-      Filestore.new(path)
+    def filestore
+      config = FilestoreConfiguration.new
+      Filestore.new(config.path, config.tmp)
     end
 
   end
