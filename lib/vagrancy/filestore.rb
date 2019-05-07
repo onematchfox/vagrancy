@@ -26,9 +26,9 @@ module Vagrancy
     end
 
     # Safely writes by locking
-    def write(file, io_stream)
+    def write(file, io_stream, logger)
       with_parent_directories_created(file) do
-        transactionally_write(file, io_stream)
+        transactionally_write(file, io_stream, logger)
       end
     end
 
@@ -51,13 +51,15 @@ module Vagrancy
       yield
     end
 
-    def transactionally_write(file, io_stream)
+    def transactionally_write(file, io_stream, logger)
       within_file_lock(file) do
         begin
           transaction_file = File.open("#{temp_path(file)}.txn", File::RDWR|File::CREAT, 0644)
           IO.copy_stream(io_stream, transaction_file)
           transaction_file.flush
+          logger.info "Upload complete - Temp file: #{temp_path(file)}.txn"
           FileUtils.mv(transaction_file.path, "#{file_path(file)}")
+          logger.info "Move complete"
         ensure
           transaction_file.close
           File.unlink("#{temp_path(file)}.txn") if File.exists?("#{temp_path(file)}.txn")
@@ -67,7 +69,6 @@ module Vagrancy
 
     def within_file_lock(file)
       begin
-        $stdout.puts "#{temp_path(file)}.lock"
         write_lock = File.open("#{temp_path(file)}.lock", File::RDWR|File::CREAT, 0644)
         write_lock.flock(File::LOCK_EX)
         yield

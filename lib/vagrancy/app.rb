@@ -28,10 +28,12 @@ module Vagrancy
     # Vagrant Cloud emulation, stepVerifyBox
     get '/box/:username/:name' do
       box = Vagrancy::Box.new(params[:name], params[:username], filestore, request)
+      boxVersions = box.to_json
+      logger.info boxVersions
 
       status 200
       content_type 'application/json'
-      box.to_json
+      boxVersions
     end
 
     # Vagrant Cloud emulation, stepCreateVersion
@@ -47,14 +49,14 @@ module Vagrancy
       content_type 'application/json'
       DummyProvider.new(request.body.read).to_json
     end
-    
+
     # Vagrant Cloud emulation, stepPrepareUpload
     get '/box/:username/:name/version/:version/provider/:provider/upload' do
       status 200
-      { 
+      {
         :upload_path => "#{request.scheme}://#{request.host}:#{request.port.to_s}/#{params[:username]}/#{params[:name]}/#{params[:version]}/#{params[:provider]}"
       }.to_json
-    end    
+    end
 
     # Vagrant Cloud emulation, clean provider
     delete '/box/:username/:name/version/:version/provider/:provider' do
@@ -72,10 +74,12 @@ module Vagrancy
 
     # Upload
     put '/:username/:name/:version/:provider' do
+      logger.info "Upload box /#{params[:username]}/#{params[:name]}/#{params[:version]}/#{params[:provider]}"
+
       box = Vagrancy::Box.new(params[:name], params[:username], filestore, request)
       provider_box = ProviderBox.new(params[:provider], params[:version], box, filestore, request)
 
-      provider_box.write(request.body)
+      provider_box.write(request.body, logger)
       status 200
       # status 201
     end

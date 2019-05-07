@@ -13,8 +13,8 @@ module Vagrancy
       exists? ? {:name => @provider, :url => url} : {}
     end
 
-    def write(stream)
-      @filestore.write(file_path, stream)
+    def write(stream, logger)
+      @filestore.write(file_path, stream, logger)
     end
 
     def read
@@ -30,14 +30,14 @@ module Vagrancy
     end
 
     def url
-      base_site + '/' + path 
+      base_site + '/' + path
     end
 
     def file_path
       path + '/box'
     end
 
-    private 
+    private
 
     def base_site
       @request.scheme + '://' + @request.host + ':' + @request.port.to_s
