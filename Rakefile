@@ -4,7 +4,7 @@ require 'bundler'
 RSpec::Core::RakeTask.new(:spec)
 
 PACKAGE_NAME = "vagrancy"
-VERSION = "0.0.6"
+VERSION = "0.0.7"
 TRAVELING_RUBY_VERSION = "20150715-2.2.2"
 PUMA_VERSION="2.11.2"
 
