@@ -1,4 +1,5 @@
 require 'sinatra/base'
+require 'aws-sdk-s3'
 
 require 'vagrancy/filestore'
 require 'vagrancy/filestore_configuration'
@@ -52,9 +53,37 @@ module Vagrancy
 
     # Vagrant Cloud emulation, stepPrepareUpload
     get '/box/:username/:name/version/:version/provider/:provider/upload' do
+
+      upload_path = "#{request.scheme}://#{request.host}:#{request.port.to_s}/#{params[:username]}/#{params[:name]}/#{params[:version]}/#{params[:provider]}"
+
+      logger.info "Upload..."
+
+      if !ENV['S3_BUCKET_NAME'].to_s.empty? then
+        if !ENV['AWS_ENDPOINT'].to_s.empty? then
+          # Used for local development using Minio. If endpoint is overriden then we expect access key and secret key to be specified as well
+          s3 = Aws::S3::Client.new(
+            endpoint: ENV['AWS_ENDPOINT'],
+            access_key_id: ENV['AWS_ACCESS_KEY_ID'],
+            secret_access_key: ENV['AWS_SECRET_ACCESS_KEY'],
+            force_path_style: true
+          )
+        else
+          s3 = Aws::S3::Client.new(
+            use_accelerate_endpoint: true
+          )
+        end
+
+        signer = Aws::S3::Presigner.new(client: s3)
+        upload_path = signer.presigned_url(
+          :put_object,
+          bucket: ENV['S3_BUCKET_NAME'],
+          key: "data/#{params[:username]}/#{params[:name]}/#{params[:version]}/#{params[:provider]}/box"
+        )
+      end
+
       status 200
       {
-        :upload_path => "#{request.scheme}://#{request.host}:#{request.port.to_s}/#{params[:username]}/#{params[:name]}/#{params[:version]}/#{params[:provider]}"
+        :upload_path => upload_path
       }.to_json
     end
 
