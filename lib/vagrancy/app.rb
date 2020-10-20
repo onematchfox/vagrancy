@@ -127,6 +127,32 @@ module Vagrancy
       box = Vagrancy::Box.new(params[:name], params[:username], filestore, request)
       provider_box = ProviderBox.new(params[:provider], params[:version], box, filestore, request)
 
+      if !ENV['S3_BUCKET_NAME'].to_s.empty? then
+        if !ENV['AWS_ENDPOINT'].to_s.empty? then
+          # Used for local development using Minio. If endpoint is overriden then we expect access key and secret key to be specified as well
+          s3 = Aws::S3::Client.new(
+            endpoint: ENV['AWS_ENDPOINT'],
+            access_key_id: ENV['AWS_ACCESS_KEY_ID'],
+            secret_access_key: ENV['AWS_SECRET_ACCESS_KEY'],
+            force_path_style: true
+          )
+        else
+          s3 = Aws::S3::Client.new(
+            use_accelerate_endpoint: true
+          )
+        end
+
+        signer = Aws::S3::Presigner.new(client: s3)
+        box_path = signer.presigned_url(
+          :get_object,
+          bucket: ENV['S3_BUCKET_NAME'],
+          key: "data/#{params[:username]}/#{params[:name]}/#{params[:version]}/#{params[:provider]}/box"
+        )
+
+        redirect box_path
+        return
+      end
+      
       send_file filestore.file_path(provider_box.file_path) if provider_box.exists?
       status provider_box.exists? ? 200 : 404
     end
